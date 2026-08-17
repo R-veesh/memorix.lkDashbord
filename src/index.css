@@ -15,25 +15,26 @@
 }
 
 :root {
-  --background: oklch(0.14 0.004 60);
-  --foreground: oklch(0.96 0.006 80);
-  --card: oklch(0.19 0.005 70);
-  --card-foreground: oklch(0.96 0.006 80);
-  --primary: oklch(0.96 0.006 80);
-  --primary-foreground: oklch(0.16 0.004 60);
-  --secondary: oklch(0.26 0.006 70);
-  --secondary-foreground: oklch(0.96 0.006 80);
-  --accent: oklch(0.78 0.07 70);
-  --border: oklch(1 0 0 / 10%);
-  --panel: oklch(0.2 0.005 70 / 70%);
-  --glow: oklch(0.84 0.09 72);
+  /* Dark Enterprise AI Aesthetic */
+  --background: #0B0E14; /* Deep charcoal/navy */
+  --foreground: #F8FAFC;
+  --card: #111827; /* Darker navy/gray for cards */
+  --card-foreground: #F8FAFC;
+  --primary: #F8FAFC;
+  --primary-foreground: #0B0E14;
+  --secondary: #1E293B;
+  --secondary-foreground: #F8FAFC;
+  --accent: #3B82F6; /* Electric blue */
+  --border: rgba(255, 255, 255, 0.1);
+  --panel: rgba(17, 24, 39, 0.7);
+  --glow: #60A5FA;
 }
 
 @layer base {
   body {
     background-color: var(--background);
     color: var(--foreground);
-    font-family: system-ui, sans-serif;
+    font-family: system-ui, -apple-system, sans-serif;
   }
 }
 

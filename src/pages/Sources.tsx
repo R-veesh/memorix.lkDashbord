@@ -1,85 +1,83 @@
-import { Database, Plus, RefreshCw, MoreHorizontal, Filter } from "lucide-react";
+import { Database, Plus, Search, Filter, MoreVertical, HardDrive, FileText, Globe } from 'lucide-react';
+import { sourcesData } from '../data/mockData';
+import { StatusBadge } from '../components/StatusBadge';
 
-const sources = [
-  { id: "SRC-01", name: "Confluence Engineering", type: "Wiki", docs: 12450, status: "Active", lastSync: "5m ago" },
-  { id: "SRC-02", name: "Customer Support Zendesk", type: "Tickets", docs: 45200, status: "Active", lastSync: "12m ago" },
-  { id: "SRC-03", name: "Product Specs Drive", type: "Drive", docs: 850, status: "Active", lastSync: "1h ago" },
-  { id: "SRC-04", name: "API Documentation", type: "GitHub", docs: 320, status: "Indexing", lastSync: "In progress" },
-  { id: "SRC-05", name: "HR Policies", type: "SharePoint", docs: 145, status: "Active", lastSync: "2h ago" },
-  { id: "SRC-06", name: "Sales Playbooks", type: "Notion", docs: 89, status: "Failed", lastSync: "Yesterday" },
-];
+const typeIcons: Record<string, React.ReactNode> = {
+  document: <FileText className="size-5 text-blue-400" />,
+  database: <HardDrive className="size-5 text-emerald-400" />,
+  api: <Globe className="size-5 text-purple-400" />,
+  communication: <Database className="size-5 text-amber-400" />
+};
 
 export default function Sources() {
   return (
-    <div className="max-w-6xl mx-auto space-y-6">
+    <div className="space-y-6 animate-in fade-in duration-500">
       <div className="flex items-center justify-between">
         <div>
-           <h1 className="text-2xl font-display font-medium">Knowledge Sources</h1>
-           <p className="text-sm text-gray-400 mt-1">Manage connected enterprise data repositories.</p>
+          <h1 className="text-2xl font-bold tracking-tight">Knowledge Sources</h1>
+          <p className="text-sm text-gray-400 mt-1">Manage connected datastores and document pipelines.</p>
         </div>
-        <button className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium hover:opacity-90 transition-opacity">
-           <Plus className="size-4" />
-           Add Source
+        <button className="flex items-center gap-2 bg-accent hover:bg-accent/90 text-primary-foreground px-4 py-2 rounded-lg font-medium transition-colors">
+          <Plus className="size-4" />
+          Add Source
         </button>
       </div>
 
-      <div className="panel-glass rounded-2xl overflow-hidden">
-        <div className="p-4 border-b border-border flex items-center justify-between bg-secondary/20">
-           <div className="flex gap-2">
-              <button className="flex items-center gap-2 px-3 py-1.5 bg-secondary border border-border rounded-md text-xs hover:bg-secondary/80">
-                 <Filter className="size-3" /> Filter
+      <div className="flex items-center gap-4 bg-card border border-border p-3 rounded-lg">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-500" />
+          <input 
+            type="text" 
+            placeholder="Search sources..." 
+            className="w-full bg-background border border-border rounded-md pl-9 pr-4 py-1.5 text-sm focus:outline-none focus:border-accent"
+          />
+        </div>
+        <button className="flex items-center gap-2 px-3 py-1.5 border border-border rounded-md text-sm hover:bg-secondary/50">
+          <Filter className="size-4" />
+          Filter
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {sourcesData.map((source) => (
+          <div key={source.id} className="bg-card border border-border rounded-xl p-5 hover:border-accent/50 transition-colors group cursor-pointer">
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="bg-secondary p-2.5 rounded-lg border border-border">
+                  {typeIcons[source.type] || <Database className="size-5 text-gray-400" />}
+                </div>
+                <div>
+                  <h3 className="font-medium text-foreground">{source.name}</h3>
+                  <p className="text-xs text-gray-400 capitalize">{source.type}</p>
+                </div>
+              </div>
+              <button className="text-gray-500 hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity">
+                <MoreVertical className="size-4" />
               </button>
-           </div>
-           <p className="text-xs text-gray-400">Showing {sources.length} sources</p>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className="text-xs text-gray-400 bg-secondary/10 border-b border-border uppercase">
-              <tr>
-                <th className="px-6 py-4 font-medium">Source Name</th>
-                <th className="px-6 py-4 font-medium">Type</th>
-                <th className="px-6 py-4 font-medium">Indexed Docs</th>
-                <th className="px-6 py-4 font-medium">Status</th>
-                <th className="px-6 py-4 font-medium">Last Sync</th>
-                <th className="px-6 py-4 text-right font-medium">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {sources.map((s) => (
-                <tr key={s.id} className="border-b border-border/50 hover:bg-secondary/30 transition-colors last:border-0">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                       <Database className="size-4 text-gray-500" />
-                       <span className="font-medium">{s.name}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-gray-400">{s.type}</td>
-                  <td className="px-6 py-4 font-mono text-gray-300">{s.docs.toLocaleString()}</td>
-                  <td className="px-6 py-4">
-                    <span className={`px-2 py-1 rounded-full text-[10px] font-medium border ${
-                       s.status === 'Active' ? 'bg-green-500/10 text-green-500 border-green-500/20' : 
-                       s.status === 'Indexing' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20 animate-pulse' : 
-                       'bg-red-500/10 text-red-400 border-red-500/20'
-                    }`}>
-                      {s.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-gray-400 text-xs">{s.lastSync}</td>
-                  <td className="px-6 py-4 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                       <button className="p-1.5 text-gray-400 hover:text-foreground rounded-md hover:bg-secondary transition-colors" title="Sync Now">
-                         <RefreshCw className="size-4" />
-                       </button>
-                       <button className="p-1.5 text-gray-400 hover:text-foreground rounded-md hover:bg-secondary transition-colors">
-                         <MoreHorizontal className="size-4" />
-                       </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            </div>
+            
+            <div className="space-y-3 mt-6">
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-gray-400">Status</span>
+                <StatusBadge status={source.status as any} />
+              </div>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-gray-400">Records Indexed</span>
+                <span className="font-mono text-gray-300">{source.record_count.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-gray-400">Last Synced</span>
+                <span className="text-gray-300">{source.last_synced}</span>
+              </div>
+            </div>
+
+            {source.error_log && (
+              <div className="mt-4 p-3 bg-rose-500/10 border border-rose-500/20 rounded-md">
+                <p className="text-xs text-rose-400 font-mono break-words">{source.error_log}</p>
+              </div>
+            )}
+          </div>
+        ))}
       </div>
     </div>
   );
