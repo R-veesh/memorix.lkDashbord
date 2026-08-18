@@ -81,6 +81,36 @@ export default function Settings() {
               </button>
             </div>
           </div>
+
+          <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
+            <h2 className="text-lg font-semibold mb-4 border-b border-border pb-2 flex items-center gap-2">
+              <Box className="size-5 text-accent" />
+              Model Context Protocol (MCP) Integrations
+            </h2>
+            <div className="space-y-4">
+              <div className="bg-secondary/30 rounded-lg p-4 border border-border/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="font-medium text-sm">Filesystem & Git Context Provider</p>
+                    <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-medium uppercase tracking-wider">
+                      Connected
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-400 mt-1">Provides access to local filesystem and git context for the AI agent.</p>
+                  <p className="text-xs text-gray-500 font-mono mt-2 bg-background/50 inline-block px-2 py-1 rounded">npx -y @modelcontextprotocol/server-filesystem /path/to/repo</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <button className="text-xs font-medium text-gray-400 hover:text-foreground bg-secondary px-3 py-1.5 rounded-lg transition-colors">Configure</button>
+                  <button className="text-xs font-medium text-rose-400 hover:text-rose-300 bg-rose-500/10 px-3 py-1.5 rounded-lg transition-colors">Disconnect</button>
+                </div>
+              </div>
+            </div>
+            <div className="mt-4 pt-4 border-t border-border">
+              <button className="bg-secondary hover:bg-secondary/80 text-foreground px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                Add MCP Server
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
