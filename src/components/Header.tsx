@@ -1,14 +1,30 @@
 import { useState, useRef, useEffect } from 'react';
-import { Menu, Search, Bell, LogOut, Check, X, BellOff } from 'lucide-react';
+import { Menu, Search, Bell, LogOut, Check, X, BellOff, LayoutDashboard, Database, Workflow, Cpu, Activity, Settings as SettingsIcon } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { systemHealth } from '../data/mockData';
 import { auth } from '../lib/firebase';
 
+const routes = [
+  { path: "/", label: "Overview", icon: LayoutDashboard },
+  { path: "/sources", label: "Sources", icon: Database },
+  { path: "/pipeline", label: "Pipeline", icon: Workflow },
+  { path: "/retrieval", label: "Retrieval Ops", icon: Search },
+  { path: "/agents", label: "AI Agents", icon: Cpu },
+  { path: "/analytics", label: "Analytics", icon: Activity },
+  { path: "/settings", label: "Settings", icon: SettingsIcon },
+];
+
 export function Header() {
+  const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
   
+  const filteredRoutes = routes.filter(route => 
+    route.label.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   const [notifications, setNotifications] = useState([
     { id: 1, title: 'New Knowledge Source', message: 'SharePoint integration completed.', time: '2m ago', unread: true },
     { id: 2, title: 'Agent Alert', message: 'Retrieval agent experienced high latency.', time: '1h ago', unread: true },
@@ -64,35 +80,36 @@ export function Header() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => setIsSearchFocused(true)}
-              placeholder="Search knowledge graph..." 
+              placeholder="Search pages..." 
               className="bg-secondary/30 border border-border rounded-full pl-9 pr-4 py-1.5 text-sm focus:outline-none focus:border-accent/50 focus:bg-secondary/50 w-64 transition-all relative z-10"
             />
             
             {isSearchFocused && searchQuery.length > 0 && (
-              <div className="absolute top-full left-0 mt-2 w-80 bg-card border border-border rounded-xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 z-50">
+              <div className="absolute top-full left-0 mt-2 w-64 bg-card border border-border rounded-xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 z-50">
                 <div className="p-2">
-                  <p className="text-xs font-semibold text-gray-400 px-2 py-1 uppercase tracking-wider">Results for "{searchQuery}"</p>
+                  <p className="text-xs font-semibold text-gray-400 px-2 py-1 uppercase tracking-wider">Navigation</p>
                   
                   <div className="mt-1">
-                    <button className="w-full text-left px-3 py-2 text-sm hover:bg-secondary/50 rounded-lg transition-colors flex items-center gap-3">
-                      <div className="p-1.5 bg-accent/10 text-accent rounded-md">
-                        <Search className="size-3" />
-                      </div>
-                      <div>
-                        <p className="font-medium text-foreground">Entity: {searchQuery}</p>
-                        <p className="text-xs text-gray-400">Found in Knowledge Graph</p>
-                      </div>
-                    </button>
-                    
-                    <button className="w-full text-left px-3 py-2 text-sm hover:bg-secondary/50 rounded-lg transition-colors flex items-center gap-3">
-                      <div className="p-1.5 bg-emerald-500/10 text-emerald-400 rounded-md">
-                        <Search className="size-3" />
-                      </div>
-                      <div>
-                        <p className="font-medium text-foreground">Document: {searchQuery} Guide</p>
-                        <p className="text-xs text-gray-400">Source: Internal Wiki</p>
-                      </div>
-                    </button>
+                    {filteredRoutes.length > 0 ? (
+                      filteredRoutes.map(route => (
+                        <button 
+                          key={route.path}
+                          onClick={() => {
+                            navigate(route.path);
+                            setSearchQuery('');
+                            setIsSearchFocused(false);
+                          }}
+                          className="w-full text-left px-3 py-2 text-sm hover:bg-secondary/50 rounded-lg transition-colors flex items-center gap-3"
+                        >
+                          <div className="p-1.5 bg-accent/10 text-accent rounded-md">
+                            <route.icon className="size-3" />
+                          </div>
+                          <span className="font-medium text-foreground">{route.label}</span>
+                        </button>
+                      ))
+                    ) : (
+                      <p className="text-sm text-gray-500 px-3 py-2">No pages found.</p>
+                    )}
                   </div>
                 </div>
               </div>
