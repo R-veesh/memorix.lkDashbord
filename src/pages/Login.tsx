@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Brain, Lock, User, ArrowRight, Eye, EyeOff } from 'lucide-react';
+import { Brain, Lock, User, ArrowRight, Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '../lib/firebase';
 import { Link, useNavigate } from 'react-router-dom';
@@ -12,6 +12,19 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
+  const getErrorMessage = (code: string) => {
+    switch (code) {
+      case 'auth/invalid-credential':
+      case 'auth/user-not-found':
+      case 'auth/wrong-password':
+        return 'Invalid email or password.';
+      case 'auth/too-many-requests':
+        return 'Too many failed attempts. Please try again later.';
+      default:
+        return 'Failed to sign in. Please try again.';
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -20,7 +33,7 @@ export default function Login() {
       await signInWithEmailAndPassword(auth, email, password);
       navigate('/');
     } catch (err: any) {
-      setError(err.message || 'Failed to sign in');
+      setError(getErrorMessage(err.code));
     } finally {
       setLoading(false);
     }
@@ -32,7 +45,7 @@ export default function Login() {
       await signInWithPopup(auth, googleProvider);
       navigate('/');
     } catch (err: any) {
-      setError(err.message || 'Failed to sign in with Google');
+      setError(getErrorMessage(err.code));
     }
   };
 
@@ -55,7 +68,12 @@ export default function Login() {
         <div className="bg-card border border-border rounded-2xl p-8 shadow-xl backdrop-blur-xl">
           <h2 className="text-lg font-semibold mb-6">Sign in to your account</h2>
           
-          {error && <div className="mb-4 text-sm text-red-500">{error}</div>}
+          {error && (
+            <div className="mb-6 p-3 rounded-lg bg-rose-500/10 border border-rose-500/20 flex items-start gap-3 text-rose-500 animate-in fade-in slide-in-from-top-2">
+              <AlertCircle className="size-5 shrink-0 mt-0.5" />
+              <p className="text-sm font-medium">{error}</p>
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>

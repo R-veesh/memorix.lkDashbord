@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Brain, Lock, User, ArrowRight, Eye, EyeOff, Info } from 'lucide-react';
+import { Brain, Lock, User, ArrowRight, Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { createUserWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '../lib/firebase';
 import { Link, useNavigate } from 'react-router-dom';
@@ -12,33 +12,27 @@ export default function Signup() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const getPasswordStrength = (pass: string) => {
-    if (!pass) return { score: 0, label: 'Very Weak', color: 'bg-gray-200 dark:bg-gray-700', textColor: 'text-gray-500' };
-    let score = 0;
-    if (pass.length >= 8) score += 1;
-    if (pass.match(/[A-Z]/)) score += 1;
-    if (pass.match(/[0-9]/)) score += 1;
-    if (pass.match(/[^A-Za-z0-9]/)) score += 1;
-
-    switch (score) {
-      case 0: return { score, label: 'Very Weak', color: 'bg-gray-200 dark:bg-gray-700', textColor: 'text-gray-500' };
-      case 1: return { score, label: 'Weak', color: 'bg-red-500', textColor: 'text-red-500' };
-      case 2: return { score, label: 'So-so', color: 'bg-orange-500', textColor: 'text-orange-500' };
-      case 3: return { score, label: 'Good', color: 'bg-lime-500', textColor: 'text-lime-500' };
-      case 4: return { score, label: 'Strong', color: 'bg-emerald-500', textColor: 'text-emerald-500' };
-      default: return { score: 0, label: 'Very Weak', color: 'bg-gray-200 dark:bg-gray-700', textColor: 'text-gray-500' };
+  const getErrorMessage = (code: string) => {
+    switch (code) {
+      case 'auth/email-already-in-use':
+        return 'An account with this email already exists.';
+      case 'auth/invalid-email':
+        return 'Please enter a valid email address.';
+      case 'auth/weak-password':
+        return 'Password should be at least 6 characters.';
+      default:
+        return 'Failed to create account. Please try again.';
     }
   };
-
-  const strength = getPasswordStrength(password);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
+      setError('Passwords do not match.');
       return;
     }
 
@@ -47,7 +41,7 @@ export default function Signup() {
       await createUserWithEmailAndPassword(auth, email, password);
       navigate('/');
     } catch (err: any) {
-      setError(err.message || 'Failed to create an account');
+      setError(getErrorMessage(err.code));
     } finally {
       setLoading(false);
     }
@@ -59,7 +53,7 @@ export default function Signup() {
       await signInWithPopup(auth, googleProvider);
       navigate('/');
     } catch (err: any) {
-      setError(err.message || 'Failed to sign in with Google');
+      setError(getErrorMessage(err.code));
     }
   };
 
@@ -82,7 +76,12 @@ export default function Signup() {
         <div className="bg-card border border-border rounded-2xl p-8 shadow-xl backdrop-blur-xl">
           <h2 className="text-lg font-semibold mb-6">Create an account</h2>
           
-          {error && <div className="mb-4 text-sm text-red-500">{error}</div>}
+          {error && (
+            <div className="mb-6 p-3 rounded-lg bg-rose-500/10 border border-rose-500/20 flex items-start gap-3 text-rose-500 animate-in fade-in slide-in-from-top-2">
+              <AlertCircle className="size-5 shrink-0 mt-0.5" />
+              <p className="text-sm font-medium">{error}</p>
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
@@ -107,13 +106,7 @@ export default function Signup() {
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className={`w-full bg-secondary/50 border rounded-lg pl-10 pr-10 py-2.5 text-sm focus:outline-none transition-colors ${
-                    password ? (strength.score === 0 || strength.score === 1 ? 'border-red-500 focus:border-red-500' : 
-                              strength.score === 2 ? 'border-orange-500 focus:border-orange-500' :
-                              strength.score === 3 ? 'border-lime-500 focus:border-lime-500' :
-                              'border-emerald-500 focus:border-emerald-500') 
-                             : 'border-border focus:border-accent'
-                  }`}
+                  className="w-full bg-secondary/50 border border-border rounded-lg pl-10 pr-10 py-2.5 text-sm focus:outline-none focus:border-accent transition-colors"
                   required
                 />
                 <button 
@@ -124,28 +117,6 @@ export default function Signup() {
                   {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                 </button>
               </div>
-              
-              {/* Password Strength Meter */}
-              {password && (
-                <div className="mt-2">
-                  <div className="flex gap-1 mb-1.5">
-                    {[1, 2, 3, 4].map((index) => (
-                      <div 
-                        key={index} 
-                        className={`h-1 w-full rounded-full transition-all duration-300 ${
-                          index <= strength.score ? strength.color : 'bg-secondary'
-                        }`}
-                      />
-                    ))}
-                  </div>
-                  <div className="flex justify-end items-center gap-1.5">
-                    <span className={`text-[10px] font-semibold ${strength.textColor}`}>
-                      {strength.label}
-                    </span>
-                    <Info className={`size-3 ${strength.textColor}`} />
-                  </div>
-                </div>
-              )}
             </div>
 
             <div>
@@ -153,12 +124,19 @@ export default function Signup() {
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-500" />
                 <input 
-                  type="password" 
+                  type={showConfirmPassword ? "text" : "password"}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full bg-secondary/50 border border-border rounded-lg pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:border-accent transition-colors"
+                  className="w-full bg-secondary/50 border border-border rounded-lg pl-10 pr-10 py-2.5 text-sm focus:outline-none focus:border-accent transition-colors"
                   required
                 />
+                <button 
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
+                >
+                  {showConfirmPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                </button>
               </div>
             </div>
 
@@ -174,6 +152,7 @@ export default function Signup() {
 
           <div className="mt-6 flex flex-col items-center gap-4">
             <button 
+              type="button"
               onClick={handleGoogleSignIn}
               className="w-full flex items-center justify-center gap-2 bg-secondary/50 hover:bg-secondary border border-border py-2.5 rounded-lg text-sm font-medium transition-all"
             >
