@@ -1,5 +1,5 @@
 import React from 'react';
-import { Workflow, ArrowRight, Database, Layers, Brain, Search, Network, Bot } from 'lucide-react';
+import { Workflow, ArrowRight, ArrowDown, Database, Layers, Brain, Search, Network, Bot } from 'lucide-react';
 import { pipelineStages } from '../data/mockData';
 import { StatusBadge } from '../components/StatusBadge';
 
@@ -26,7 +26,7 @@ export default function Pipeline() {
         {/* Animated flow background */}
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-accent/30 via-background to-background pointer-events-none"></div>
         
-        <div className="flex-1 flex items-center justify-between relative z-10 overflow-x-auto pb-8">
+        <div className="flex-1 flex flex-col md:flex-row items-center md:justify-between gap-4 md:gap-0 relative z-10 overflow-y-auto md:overflow-x-auto pb-8">
           {pipelineStages.map((stage, index) => (
             <React.Fragment key={stage.stage}>
               {/* Stage Node */}
@@ -62,11 +62,17 @@ export default function Pipeline() {
 
               {/* Connector */}
               {index < pipelineStages.length - 1 && (
-                <div className="flex-1 min-w-[60px] max-w-[100px] flex items-center justify-center relative px-2">
-                  <div className="w-full h-0.5 bg-border relative">
+                <div className="flex-1 min-h-[40px] md:min-h-0 min-w-[60px] md:max-w-[100px] flex flex-col md:flex-row items-center justify-center relative py-2 md:px-2">
+                  {/* Horizontal line for desktop */}
+                  <div className="hidden md:block w-full h-0.5 bg-border relative">
                     <div className="absolute top-0 left-0 h-full bg-accent animate-[pulse_2s_ease-in-out_infinite] w-full origin-left"></div>
                   </div>
-                  <ArrowRight className="absolute text-accent size-4" />
+                  {/* Vertical line for mobile */}
+                  <div className="block md:hidden h-full w-0.5 bg-border relative">
+                    <div className="absolute top-0 left-0 w-full bg-accent animate-[pulse_2s_ease-in-out_infinite] h-full origin-top"></div>
+                  </div>
+                  <ArrowRight className="hidden md:block absolute text-accent size-4" />
+                  <ArrowDown className="block md:hidden absolute text-accent size-4" />
                 </div>
               )}
             </React.Fragment>
