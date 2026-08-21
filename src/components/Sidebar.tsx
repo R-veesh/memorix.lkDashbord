@@ -9,10 +9,12 @@ import type { User } from 'firebase/auth';
 export function Sidebar() {
   const location = useLocation();
   const [user, setUser] = useState<User | null>(null);
+  const [imgError, setImgError] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
+      setImgError(false); // Reset error state on user change
     });
     return () => unsubscribe();
   }, []);
@@ -59,8 +61,13 @@ export function Sidebar() {
       
       <div className="p-4 m-4 rounded-xl bg-secondary/30 border border-border/50 backdrop-blur-md">
         <div className="flex items-center gap-3">
-          {user?.photoURL ? (
-            <img src={user.photoURL} alt="Profile" className="w-8 h-8 rounded-full border border-accent/30 object-cover" />
+          {user?.photoURL && !imgError ? (
+            <img 
+              src={user.photoURL} 
+              alt="Profile" 
+              className="w-8 h-8 rounded-full border border-accent/30 object-cover" 
+              onError={() => setImgError(true)}
+            />
           ) : (
             <div className="w-8 h-8 rounded-full bg-accent/20 border border-accent/30 flex items-center justify-center text-accent font-bold text-xs uppercase">
               {user?.displayName ? user.displayName.charAt(0) : user?.email ? user.email.charAt(0) : 'A'}
