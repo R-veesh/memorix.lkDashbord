@@ -1,10 +1,40 @@
-import { Menu, Search, Bell, LogOut } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { Menu, Search, Bell, LogOut, Check, X, BellOff } from 'lucide-react';
 import { systemHealth } from '../data/mockData';
 import { auth } from '../lib/firebase';
 
 export function Header() {
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState([
+    { id: 1, title: 'New Knowledge Source', message: 'SharePoint integration completed.', time: '2m ago', unread: true },
+    { id: 2, title: 'Agent Alert', message: 'Retrieval agent experienced high latency.', time: '1h ago', unread: true },
+    { id: 3, title: 'System Update', message: 'Memorix Core v2.4 deployed.', time: '3h ago', unread: false },
+  ]);
+  
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowNotifications(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const unreadCount = notifications.filter(n => n.unread).length;
+
+  const markAllAsRead = () => {
+    setNotifications(notifications.map(n => ({ ...n, unread: false })));
+  };
+
+  const clearNotifications = () => {
+    setNotifications([]);
+  };
+
   return (
-    <header className="h-16 border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-10 flex items-center justify-between px-6">
+    <header className="h-16 border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-50 flex items-center justify-between px-6">
        <div className="flex items-center gap-4">
          <button className="md:hidden text-gray-400 hover:text-foreground transition-colors">
            <Menu className="size-5" />
@@ -29,10 +59,64 @@ export function Header() {
             />
           </div>
           
-          <button className="relative p-2 text-gray-400 hover:text-foreground transition-colors rounded-full hover:bg-secondary/50">
-            <Bell className="size-4" />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-rose-500 border border-background"></span>
-          </button>
+          <div className="relative" ref={dropdownRef}>
+            <button 
+              onClick={() => setShowNotifications(!showNotifications)}
+              className="relative p-2 text-gray-400 hover:text-foreground transition-colors rounded-full hover:bg-secondary/50 focus:outline-none"
+            >
+              <Bell className="size-4" />
+              {unreadCount > 0 && (
+                <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-rose-500 border border-background"></span>
+              )}
+            </button>
+            
+            {showNotifications && (
+              <div className="absolute right-0 mt-2 w-80 bg-card border border-border rounded-xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                <div className="flex items-center justify-between p-4 border-b border-border/50 bg-secondary/20">
+                  <h3 className="font-semibold text-sm">Notifications</h3>
+                  <div className="flex gap-2">
+                    {unreadCount > 0 && (
+                      <button onClick={markAllAsRead} className="text-xs text-accent hover:text-accent/80 transition-colors flex items-center gap-1" title="Mark all as read">
+                        <Check className="size-3" />
+                      </button>
+                    )}
+                    {notifications.length > 0 && (
+                      <button onClick={clearNotifications} className="text-xs text-gray-400 hover:text-rose-400 transition-colors flex items-center gap-1" title="Clear all">
+                        <X className="size-3" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+                
+                <div className="max-h-[300px] overflow-y-auto">
+                  {notifications.length === 0 ? (
+                    <div className="p-8 text-center flex flex-col items-center justify-center text-gray-500">
+                      <BellOff className="size-8 mb-2 opacity-20" />
+                      <p className="text-sm">No new notifications</p>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col">
+                      {notifications.map((notif) => (
+                        <div 
+                          key={notif.id} 
+                          className={`p-4 border-b border-border/50 last:border-0 hover:bg-secondary/30 transition-colors cursor-pointer ${notif.unread ? 'bg-accent/5' : ''}`}
+                        >
+                          <div className="flex items-start justify-between gap-2">
+                            <h4 className={`text-sm font-medium ${notif.unread ? 'text-foreground' : 'text-gray-300'}`}>
+                              {notif.title}
+                            </h4>
+                            <span className="text-[10px] text-gray-500 whitespace-nowrap">{notif.time}</span>
+                          </div>
+                          <p className="text-xs text-gray-400 mt-1">{notif.message}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+          
           <button 
             onClick={() => auth.signOut()}
             className="flex items-center gap-2 text-sm font-medium text-gray-400 hover:text-rose-400 transition-colors bg-secondary/30 px-3 py-1.5 rounded-full border border-transparent hover:border-rose-500/30"
