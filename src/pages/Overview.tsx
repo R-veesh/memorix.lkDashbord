@@ -2,6 +2,7 @@ import { StatCard } from '../components/StatCard';
 import { StatusBadge } from '../components/StatusBadge';
 import { Database, Search, Cpu, Activity, Clock, Network } from 'lucide-react';
 import { recentActivity, systemHealth } from '../data/mockData';
+import { ParticleSphere } from '../components/ParticleSphere';
 
 export default function Overview() {
   return (
@@ -56,27 +57,12 @@ export default function Overview() {
             <span className="text-xs bg-secondary px-2 py-1 rounded text-gray-400">Force-Directed Preview</span>
           </div>
           
-          <div className="flex-1 flex items-center justify-center relative z-10">
-            <div className="text-center">
-              <div className="w-16 h-16 rounded-full border border-accent/30 flex items-center justify-center mx-auto mb-3 animate-pulse bg-accent/5">
-                <Network className="size-6 text-accent/50" />
-              </div>
-              <p className="text-sm text-gray-400 max-w-xs">Connecting 3.6M nodes across 142 knowledge sources...</p>
-            </div>
+          <div className="flex-1 flex items-center justify-center relative z-10 pointer-events-none">
+            {/* The canvas takes care of the visual now */}
           </div>
           
-          {/* Aesthetic background particles for "graph" feel */}
-          <div className="absolute inset-0 opacity-20 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-accent/20 via-background to-background pointer-events-none transition-opacity duration-1000 group-hover:opacity-40"></div>
-          <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-accent rounded-full shadow-[0_0_10px_rgba(59,130,246,0.8)]"></div>
-          <div className="absolute top-3/4 left-1/2 w-1.5 h-1.5 bg-purple-500 rounded-full shadow-[0_0_10px_rgba(168,85,247,0.8)]"></div>
-          <div className="absolute top-1/2 right-1/4 w-2 h-2 bg-emerald-500 rounded-full shadow-[0_0_10px_rgba(16,185,129,0.8)]"></div>
-          
-          {/* SVG Connecting lines (fake graph) */}
-          <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-20">
-            <line x1="25%" y1="25%" x2="50%" y2="75%" stroke="var(--accent)" strokeWidth="1" strokeDasharray="4 4" />
-            <line x1="50%" y1="75%" x2="75%" y2="50%" stroke="#a855f7" strokeWidth="1" strokeDasharray="4 4" />
-            <line x1="25%" y1="25%" x2="75%" y2="50%" stroke="#10b981" strokeWidth="1" strokeDasharray="4 4" />
-          </svg>
+          {/* 3D Particle Sphere Visualization */}
+          <ParticleSphere />
         </div>
 
         {/* Activity Feed */}
