@@ -1,7 +1,16 @@
 import React from 'react';
-import { Workflow, ArrowRight } from 'lucide-react';
+import { Workflow, ArrowRight, Database, Layers, Brain, Search, Network, Bot } from 'lucide-react';
 import { pipelineStages } from '../data/mockData';
 import { StatusBadge } from '../components/StatusBadge';
+
+const stageIcons: Record<string, React.ReactNode> = {
+  "Ingestion": <Database className="size-6 text-accent" />,
+  "Indexing": <Layers className="size-6 text-accent" />,
+  "Semantic Processing": <Brain className="size-6 text-accent" />,
+  "Contextual Retrieval": <Search className="size-6 text-accent" />,
+  "AI Memory Layer": <Network className="size-6 text-accent" />,
+  "Agent Interaction": <Bot className="size-6 text-accent" />
+};
 
 export default function Pipeline() {
   return (
@@ -23,7 +32,7 @@ export default function Pipeline() {
               {/* Stage Node */}
               <div className="flex flex-col items-center flex-shrink-0 w-48 group">
                 <div className="w-16 h-16 rounded-2xl bg-secondary border-2 border-accent/30 flex items-center justify-center mb-4 relative group-hover:border-accent transition-colors shadow-[0_0_15px_rgba(59,130,246,0.1)] group-hover:shadow-[0_0_20px_rgba(59,130,246,0.3)]">
-                  <Workflow className="size-6 text-accent" />
+                  {stageIcons[stage.stage] || <Workflow className="size-6 text-accent" />}
                   
                   {/* Live Pulse Indicator */}
                   {stage.status === 'active' && (

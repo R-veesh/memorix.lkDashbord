@@ -5,6 +5,10 @@ import { auth } from '../lib/firebase';
 
 export function Header() {
   const [showNotifications, setShowNotifications] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
+  
   const [notifications, setNotifications] = useState([
     { id: 1, title: 'New Knowledge Source', message: 'SharePoint integration completed.', time: '2m ago', unread: true },
     { id: 2, title: 'Agent Alert', message: 'Retrieval agent experienced high latency.', time: '1h ago', unread: true },
@@ -17,6 +21,9 @@ export function Header() {
     function handleClickOutside(event: MouseEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setShowNotifications(false);
+      }
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setIsSearchFocused(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -50,13 +57,46 @@ export function Header() {
        </div>
        
        <div className="flex items-center gap-4">
-          <div className="relative hidden md:block group">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-500 group-focus-within:text-accent transition-colors" />
+          <div className="relative hidden md:block group" ref={searchRef}>
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-500 group-focus-within:text-accent transition-colors z-10" />
             <input 
               type="text" 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onFocus={() => setIsSearchFocused(true)}
               placeholder="Search knowledge graph..." 
-              className="bg-secondary/30 border border-border rounded-full pl-9 pr-4 py-1.5 text-sm focus:outline-none focus:border-accent/50 focus:bg-secondary/50 w-64 transition-all"
+              className="bg-secondary/30 border border-border rounded-full pl-9 pr-4 py-1.5 text-sm focus:outline-none focus:border-accent/50 focus:bg-secondary/50 w-64 transition-all relative z-10"
             />
+            
+            {isSearchFocused && searchQuery.length > 0 && (
+              <div className="absolute top-full left-0 mt-2 w-80 bg-card border border-border rounded-xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 z-50">
+                <div className="p-2">
+                  <p className="text-xs font-semibold text-gray-400 px-2 py-1 uppercase tracking-wider">Results for "{searchQuery}"</p>
+                  
+                  <div className="mt-1">
+                    <button className="w-full text-left px-3 py-2 text-sm hover:bg-secondary/50 rounded-lg transition-colors flex items-center gap-3">
+                      <div className="p-1.5 bg-accent/10 text-accent rounded-md">
+                        <Search className="size-3" />
+                      </div>
+                      <div>
+                        <p className="font-medium text-foreground">Entity: {searchQuery}</p>
+                        <p className="text-xs text-gray-400">Found in Knowledge Graph</p>
+                      </div>
+                    </button>
+                    
+                    <button className="w-full text-left px-3 py-2 text-sm hover:bg-secondary/50 rounded-lg transition-colors flex items-center gap-3">
+                      <div className="p-1.5 bg-emerald-500/10 text-emerald-400 rounded-md">
+                        <Search className="size-3" />
+                      </div>
+                      <div>
+                        <p className="font-medium text-foreground">Document: {searchQuery} Guide</p>
+                        <p className="text-xs text-gray-400">Source: Internal Wiki</p>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
           
           <div className="relative" ref={dropdownRef}>
