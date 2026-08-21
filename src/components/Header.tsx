@@ -1,5 +1,6 @@
-import { Menu, Search, Bell } from 'lucide-react';
+import { Menu, Search, Bell, LogOut } from 'lucide-react';
 import { systemHealth } from '../data/mockData';
+import { auth } from '../lib/firebase';
 
 export function Header() {
   return (
@@ -31,6 +32,13 @@ export function Header() {
           <button className="relative p-2 text-gray-400 hover:text-foreground transition-colors rounded-full hover:bg-secondary/50">
             <Bell className="size-4" />
             <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-rose-500 border border-background"></span>
+          </button>
+          <button 
+            onClick={() => auth.signOut()}
+            className="flex items-center gap-2 text-sm font-medium text-gray-400 hover:text-rose-400 transition-colors bg-secondary/30 px-3 py-1.5 rounded-full border border-transparent hover:border-rose-500/30"
+          >
+            <LogOut className="size-4" />
+            <span className="hidden sm:inline">Logout</span>
           </button>
        </div>
     </header>
