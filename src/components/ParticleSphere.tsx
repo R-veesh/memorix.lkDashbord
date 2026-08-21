@@ -31,7 +31,7 @@ export const ParticleSphere = () => {
 
     const particles: Particle[] = [];
     const particleCount = 500;
-    let sphereRadius = Math.min(width, height) * 0.35;
+    let sphereRadius = Math.min(width, height) * 0.30;
 
     const types = ['Source', 'Agent', 'Document', 'Entity'];
 
@@ -39,14 +39,14 @@ export const ParticleSphere = () => {
     for (let i = 0; i < particleCount; i++) {
       const theta = Math.random() * 2 * Math.PI;
       const phi = Math.acos((Math.random() * 2) - 1);
-      
+
       const x = Math.sin(phi) * Math.cos(theta);
       const y = Math.sin(phi) * Math.sin(theta);
       const z = Math.cos(phi);
 
       const isRed = Math.random() > 0.9;
       const type = types[Math.floor(Math.random() * types.length)];
-      
+
       particles.push({
         x, y, z,
         r: Math.random() * 1.5 + 0.8,
@@ -63,7 +63,7 @@ export const ParticleSphere = () => {
     let animationFrameId: number;
     let rotX = 0;
     let rotY = 0;
-    
+
     // Interaction state
     let isDragging = false;
     let lastMouseX = 0;
@@ -88,7 +88,7 @@ export const ParticleSphere = () => {
       // Smooth rotation interpolation
       rotX += (targetRotX - rotX) * 0.1;
       rotY += (targetRotY - rotY) * 0.1;
-      
+
       // Smooth scale interpolation
       currentScale += (targetScale - currentScale) * 0.1;
 
@@ -118,7 +118,7 @@ export const ParticleSphere = () => {
         // Draw particle
         ctx.beginPath();
         ctx.arc(xProjected, yProjected, p.r * scale * currentScale, 0, Math.PI * 2);
-        
+
         // Depth-based opacity (far points are dimmer)
         const opacity = Math.max(0.1, Math.min(1, (z2 + 1) / 2 + 0.2));
         ctx.fillStyle = p.color;
@@ -133,7 +133,7 @@ export const ParticleSphere = () => {
         if (dist < minDistance) {
           // If we found multiple close ones, pick the one closest to the camera (highest z2)
           if (!closestNode || z2 > closestNode.z) {
-             closestNode = { x: xProjected, y: yProjected, data: p.data, z: z2 };
+            closestNode = { x: xProjected, y: yProjected, data: p.data, z: z2 };
           }
         }
       });
@@ -154,7 +154,7 @@ export const ParticleSphere = () => {
     const handleResize = () => {
       width = canvas.width = canvas.offsetWidth;
       height = canvas.height = canvas.offsetHeight;
-      sphereRadius = Math.min(width, height) * 0.35;
+      sphereRadius = Math.min(width, height) * 0.25;
     };
 
     const handleMouseDown = (e: MouseEvent) => {
@@ -171,10 +171,10 @@ export const ParticleSphere = () => {
       if (isDragging) {
         const deltaX = e.clientX - lastMouseX;
         const deltaY = e.clientY - lastMouseY;
-        
+
         targetRotY += deltaX * 0.005;
         targetRotX += deltaY * 0.005;
-        
+
         lastMouseX = e.clientX;
         lastMouseY = e.clientY;
       }
@@ -189,7 +189,7 @@ export const ParticleSphere = () => {
       mouseX = -1000;
       mouseY = -1000;
     };
-    
+
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
       targetScale -= e.deltaY * 0.001;
@@ -216,12 +216,12 @@ export const ParticleSphere = () => {
 
   return (
     <div className="w-full h-full absolute inset-0 z-0">
-      <canvas 
-        ref={canvasRef} 
+      <canvas
+        ref={canvasRef}
         className="w-full h-full block touch-none"
       />
       {hoveredNode && (
-        <div 
+        <div
           className="absolute pointer-events-none bg-background/90 backdrop-blur-md border border-border p-3 rounded-lg shadow-xl z-50 min-w-[150px]"
           style={{
             left: hoveredNode.x + 15,
