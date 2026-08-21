@@ -1,9 +1,22 @@
+import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Database, LayoutDashboard, Search, Settings, Cpu, Activity, Workflow } from 'lucide-react';
 import logoUrl from '../assets/logo-w.svg';
+import { auth } from '../lib/firebase';
+import { onAuthStateChanged } from 'firebase/auth';
+import type { User } from 'firebase/auth';
 
 export function Sidebar() {
   const location = useLocation();
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsubscribe();
+  }, []);
+
   const navItems = [
     { path: "/", label: "Overview", icon: LayoutDashboard },
     { path: "/sources", label: "Sources", icon: Database },
@@ -46,12 +59,16 @@ export function Sidebar() {
       
       <div className="p-4 m-4 rounded-xl bg-secondary/30 border border-border/50 backdrop-blur-md">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-accent/20 border border-accent/30 flex items-center justify-center text-accent font-bold text-xs">
-            A
-          </div>
+          {user?.photoURL ? (
+            <img src={user.photoURL} alt="Profile" className="w-8 h-8 rounded-full border border-accent/30 object-cover" />
+          ) : (
+            <div className="w-8 h-8 rounded-full bg-accent/20 border border-accent/30 flex items-center justify-center text-accent font-bold text-xs uppercase">
+              {user?.displayName ? user.displayName.charAt(0) : user?.email ? user.email.charAt(0) : 'A'}
+            </div>
+          )}
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-foreground truncate">Admin User</p>
-            <p className="text-[10px] text-gray-400 truncate">Enterprise Security</p>
+            <p className="text-sm font-medium text-foreground truncate">{user?.displayName || 'User'}</p>
+            <p className="text-[10px] text-gray-400 truncate">{user?.email || 'Loading...'}</p>
           </div>
         </div>
       </div>
