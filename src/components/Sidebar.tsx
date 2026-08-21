@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Brain, Database, LayoutDashboard, Search, Settings, Cpu, Activity, Workflow } from 'lucide-react';
+import { Database, LayoutDashboard, Search, Settings, Cpu, Activity, Workflow } from 'lucide-react';
+import logoUrl from '../assets/logo-w.svg';
 
 export function Sidebar() {
   const location = useLocation();
@@ -15,11 +16,8 @@ export function Sidebar() {
 
   return (
     <aside className="w-64 border-r border-border bg-background h-screen sticky top-0 hidden md:flex flex-col z-20">
-      <div className="p-6 flex items-center gap-3">
-        <div className="bg-accent/10 p-2 rounded-lg border border-accent/20">
-          <Brain className="text-accent size-6" />
-        </div>
-        <span className="font-bold tracking-widest text-lg text-foreground">MEMORIX</span>
+      <div className="p-6 flex items-center justify-center mb-2">
+        <img src={logoUrl} alt="Memorix Logo" className="h-10 object-contain" />
       </div>
       
       <div className="px-6 mb-4 mt-2 text-[10px] font-semibold text-gray-500 uppercase tracking-wider">

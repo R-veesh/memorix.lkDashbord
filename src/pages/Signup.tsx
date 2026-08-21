@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Brain, Lock, User, ArrowRight, Eye, EyeOff, AlertCircle } from 'lucide-react';
+import { Lock, User, ArrowRight, Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { createUserWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '../lib/firebase';
 import { Link, useNavigate } from 'react-router-dom';
+import logoUrl from '../assets/logo-w.svg';
 
 export default function Signup() {
   const navigate = useNavigate();
@@ -67,11 +68,8 @@ export default function Signup() {
 
       <div className="w-full max-w-md relative z-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
         <div className="flex flex-col items-center mb-8">
-          <div className="bg-accent/10 p-3 rounded-2xl border border-accent/20 mb-4 shadow-[0_0_30px_rgba(59,130,246,0.15)]">
-            <Brain className="text-accent size-10" />
-          </div>
-          <h1 className="text-2xl font-bold tracking-widest">MEMORIX</h1>
-          <p className="text-sm text-gray-400 mt-2">Knowledge Operations Center</p>
+          <img src={logoUrl} alt="Memorix Logo" className="size-32 object-contain mb-2" />
+          <p className="text-sm text-gray-400">Knowledge Operations Center</p>
         </div>
 
         <div className="bg-card border border-border rounded-2xl p-8 shadow-xl backdrop-blur-xl">
