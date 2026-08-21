@@ -121,6 +121,7 @@ export default function Signup() {
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  placeholder="********"
                   className="w-full bg-secondary/50 border border-border rounded-lg pl-10 pr-10 py-2.5 text-sm focus:outline-none focus:border-accent transition-colors"
                   required
                 />
@@ -142,6 +143,7 @@ export default function Signup() {
                   type={showConfirmPassword ? "text" : "password"}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="********"
                   className="w-full bg-secondary/50 border border-border rounded-lg pl-10 pr-10 py-2.5 text-sm focus:outline-none focus:border-accent transition-colors"
                   required
                 />
