@@ -6,6 +6,7 @@ import { Link, useNavigate } from 'react-router-dom';
 
 export default function Signup() {
   const navigate = useNavigate();
+  const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -85,6 +86,21 @@ export default function Signup() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
+              <label className="block text-xs font-medium text-gray-400 mb-1.5">Full Name</label>
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-500" />
+                <input 
+                  type="text" 
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  placeholder="John Doe"
+                  className="w-full bg-secondary/50 border border-border rounded-lg pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:border-accent transition-colors"
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
               <label className="block text-xs font-medium text-gray-400 mb-1.5">Email</label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-500" />
@@ -92,6 +108,7 @@ export default function Signup() {
                   type="email" 
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  placeholder="work@gmail.com"
                   className="w-full bg-secondary/50 border border-border rounded-lg pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:border-accent transition-colors"
                   required
                 />
