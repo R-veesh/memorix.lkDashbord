@@ -128,7 +128,7 @@ export function Header() {
             </button>
             
             {showNotifications && (
-              <div className="absolute right-0 mt-2 w-80 bg-card border border-border rounded-xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+              <div className="absolute -right-14 sm:right-0 mt-2 w-[300px] sm:w-80 max-w-[calc(100vw-2rem)] bg-card border border-border rounded-xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 z-50">
                 <div className="flex items-center justify-between p-4 border-b border-border/50 bg-secondary/20">
                   <h3 className="font-semibold text-sm">Notifications</h3>
                   <div className="flex gap-2">
