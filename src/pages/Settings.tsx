@@ -98,17 +98,18 @@ export default function Settings() {
   ];
 
   return (
-    <div className="max-w-4xl space-y-6 animate-in fade-in duration-500 relative">
-      
+    <>
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 animate-in slide-in-from-bottom-5 fade-in duration-300">
-          <div className="bg-accent text-primary-foreground px-4 py-3 rounded-lg shadow-xl flex items-center gap-3 text-sm font-medium">
-            <Check className="size-4" />
-            {toastMessage}
+        <div className="fixed bottom-6 left-6 right-6 sm:left-auto sm:right-6 z-[100] animate-in slide-in-from-bottom-5 fade-in duration-300 pointer-events-none">
+          <div className="bg-accent text-primary-foreground px-4 py-3 rounded-lg shadow-xl flex items-center gap-3 text-sm font-medium pointer-events-auto mx-auto sm:mx-0 max-w-md">
+            <Check className="size-4 shrink-0" />
+            <span>{toastMessage}</span>
           </div>
         </div>
       )}
+
+      <div className="max-w-4xl space-y-6 animate-in fade-in duration-500 relative">
 
       <div className="flex items-center justify-between">
         <div>
@@ -151,12 +152,12 @@ export default function Settings() {
                   <p className="text-sm text-gray-400 text-center py-4">No active API keys found.</p>
                 ) : (
                   apiKeys.map(key => (
-                    <div key={key.id} className="bg-secondary/30 rounded-lg p-4 border border-border/50 flex items-center justify-between">
-                      <div>
-                        <p className="font-medium text-sm">{key.name}</p>
-                        <p className="text-xs text-gray-400 font-mono mt-1">{key.key}</p>
+                    <div key={key.id} className="bg-secondary/30 rounded-lg p-4 border border-border/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <div className="min-w-0">
+                        <p className="font-medium text-sm truncate">{key.name}</p>
+                        <p className="text-xs text-gray-400 font-mono mt-1 truncate">{key.key}</p>
                       </div>
-                      <div className="flex items-center gap-4 text-xs">
+                      <div className="flex items-center gap-4 text-xs shrink-0">
                         <span className="text-gray-400">Created: {key.created}</span>
                         <button onClick={() => revokeApiKey(key.id)} className="text-rose-400 hover:text-rose-300 transition-colors font-medium">Revoke</button>
                       </div>
@@ -188,21 +189,21 @@ export default function Settings() {
                    <p className="text-sm text-gray-400 text-center py-4">No team members.</p>
                 ) : (
                   teamMembers.map(member => (
-                    <div key={member.id} className="flex items-center justify-between p-3 bg-secondary/20 hover:bg-secondary/40 rounded-lg transition-colors border border-transparent hover:border-border/50">
-                      <div className="flex items-center gap-3">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs border ${member.color}`}>
+                    <div key={member.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-secondary/20 hover:bg-secondary/40 rounded-lg transition-colors border border-transparent hover:border-border/50 gap-4">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs border shrink-0 ${member.color}`}>
                           {member.initial}
                         </div>
-                        <div>
-                          <p className="font-medium text-sm text-foreground">{member.name}</p>
-                          <p className="text-xs text-gray-400">{member.email}</p>
+                        <div className="min-w-0">
+                          <p className="font-medium text-sm text-foreground truncate">{member.name}</p>
+                          <p className="text-xs text-gray-400 truncate">{member.email}</p>
                         </div>
                       </div>
                       
                       {member.role === 'Owner' ? (
-                        <span className="px-2.5 py-1 rounded bg-secondary text-xs text-gray-300 border border-border/50">Owner</span>
+                        <span className="px-2.5 py-1 rounded bg-secondary text-xs text-gray-300 border border-border/50 self-start sm:self-auto">Owner</span>
                       ) : (
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-3 shrink-0 self-start sm:self-auto">
                           <select 
                             value={member.role}
                             onChange={(e) => updateMemberRole(member.id, e.target.value)}
@@ -289,7 +290,7 @@ export default function Settings() {
                           </span>
                         </div>
                         <p className="text-xs text-gray-400 mt-1">{integration.desc}</p>
-                        <p className="text-xs text-gray-500 font-mono mt-2 bg-background/50 inline-block px-2 py-1 rounded border border-border/30">{integration.command}</p>
+                        <p className="text-xs text-gray-500 font-mono mt-2 bg-background/50 block break-all px-2 py-1 rounded border border-border/30">{integration.command}</p>
                       </div>
                       <div className="flex items-center gap-3">
                         <button onClick={() => showToast(`Configuring ${integration.name}...`)} className="text-xs font-medium text-gray-300 hover:text-foreground bg-secondary hover:bg-secondary/80 px-3 py-1.5 rounded-lg transition-colors">Configure</button>
@@ -310,6 +311,7 @@ export default function Settings() {
 
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
