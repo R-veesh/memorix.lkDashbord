@@ -14,7 +14,7 @@ const routes = [
   { path: "/settings", label: "Settings", icon: SettingsIcon },
 ];
 
-export function Header() {
+export function Header({ onMenuClick }: { onMenuClick?: () => void }) {
   const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -59,7 +59,7 @@ export function Header() {
   return (
     <header className="h-16 border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-50 flex items-center justify-between px-6">
        <div className="flex items-center gap-4">
-         <button className="md:hidden text-gray-400 hover:text-foreground transition-colors">
+         <button onClick={onMenuClick} className="md:hidden text-gray-400 hover:text-foreground transition-colors">
            <Menu className="size-5" />
          </button>
          <div className="hidden sm:flex items-center gap-2">

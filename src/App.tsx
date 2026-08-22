@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { useState } from "react";
 import { Sidebar } from "./components/Sidebar";
 import { Header } from "./components/Header";
 import Overview from "./pages/Overview";
@@ -15,6 +16,7 @@ import { Loader2 } from "lucide-react";
 
 function AppContent() {
   const { isAuthenticated, loading } = useAuth();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   if (loading) {
     return (
@@ -36,9 +38,9 @@ function AppContent() {
 
   return (
     <div className="flex min-h-screen bg-background text-foreground font-sans selection:bg-accent/30">
-      <Sidebar />
+      <Sidebar isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen} />
       <div className="flex-1 flex flex-col min-w-0">
-        <Header />
+        <Header onMenuClick={() => setIsMobileMenuOpen(true)} />
         <main className="flex-1 p-6 overflow-auto">
           <Routes>
             <Route path="/" element={<Overview />} />

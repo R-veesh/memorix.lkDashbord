@@ -6,7 +6,7 @@ import { auth } from '../lib/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import type { User } from 'firebase/auth';
 
-export function Sidebar() {
+export function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }: { isMobileMenuOpen?: boolean, setIsMobileMenuOpen?: (open: boolean) => void }) {
   const location = useLocation();
   const [user, setUser] = useState<User | null>(null);
   const [imgError, setImgError] = useState(false);
@@ -30,8 +30,17 @@ export function Sidebar() {
   ];
 
   return (
-    <aside className="w-64 border-r border-border bg-background h-screen sticky top-0 hidden md:flex flex-col z-20">
-      <div className="p-6 flex items-center justify-center mb-2">
+    <>
+      {/* Mobile Overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-background/80 backdrop-blur-sm z-40 md:hidden"
+          onClick={() => setIsMobileMenuOpen?.(false)}
+        />
+      )}
+      
+      <aside className={`w-64 border-r border-border bg-background h-screen fixed inset-y-0 left-0 z-50 flex flex-col transition-transform duration-300 ease-in-out md:sticky md:top-0 md:translate-x-0 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className="p-6 flex items-center justify-center mb-2">
         <img src={logoUrl} alt="Memorix Logo" className="h-10 object-contain" />
       </div>
       
@@ -46,6 +55,7 @@ export function Sidebar() {
             <Link
               key={item.path}
               to={item.path}
+              onClick={() => setIsMobileMenuOpen?.(false)}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
                 active 
                   ? "bg-accent/10 text-accent border border-accent/10" 
@@ -79,6 +89,7 @@ export function Sidebar() {
           </div>
         </div>
       </div>
-    </aside>
+      </aside>
+    </>
   );
 }
