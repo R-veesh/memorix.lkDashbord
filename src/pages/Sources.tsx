@@ -48,6 +48,38 @@ export default function Sources() {
     setNewSourceType('database');
   };
 
+  const handleRemoveSource = (id: string) => {
+    setSources(sources.filter(s => s.id !== id));
+    setActiveDropdown(null);
+  };
+
+  const handleSyncSource = (id: string) => {
+    setSources(sources.map(s => 
+      s.id === id ? { ...s, status: 'syncing' } : s
+    ));
+    setActiveDropdown(null);
+    
+    setTimeout(() => {
+      setSources(current => current.map(s => 
+        s.id === id ? { ...s, status: 'active', last_synced: 'Just now' } : s
+      ));
+    }, 2000);
+  };
+
+  const [editingSource, setEditingSource] = useState<{id: string, name: string, type: string} | null>(null);
+
+  const handleEditSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingSource?.name) return;
+    
+    setSources(sources.map(s => 
+      s.id === editingSource.id 
+        ? { ...s, name: editingSource.name, type: editingSource.type } 
+        : s
+    ));
+    setEditingSource(null);
+  };
+
   const filteredSources = sources.filter(s => {
     const matchesSearch = s.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesType = typeFilter ? s.type === typeFilter : true;
@@ -161,16 +193,28 @@ export default function Sources() {
                       onClick={(e) => e.stopPropagation()}
                     >
                       <div className="p-1">
-                        <button className="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-secondary/50 text-foreground flex items-center gap-2">
+                        <button 
+                          onClick={() => handleSyncSource(source.id)}
+                          className="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-secondary/50 text-foreground flex items-center gap-2"
+                        >
                           <RefreshCw className="size-3.5" />
                           Sync Now
                         </button>
-                        <button className="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-secondary/50 text-foreground flex items-center gap-2">
+                        <button 
+                          onClick={() => {
+                            setEditingSource({ id: source.id, name: source.name, type: source.type });
+                            setActiveDropdown(null);
+                          }}
+                          className="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-secondary/50 text-foreground flex items-center gap-2"
+                        >
                           <Edit2 className="size-3.5" />
                           Edit Settings
                         </button>
                         <div className="h-px bg-border my-1" />
-                        <button className="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-rose-500/10 text-rose-400 flex items-center gap-2">
+                        <button 
+                          onClick={() => handleRemoveSource(source.id)}
+                          className="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-rose-500/10 text-rose-400 flex items-center gap-2"
+                        >
                           <Trash2 className="size-3.5" />
                           Remove
                         </button>
@@ -258,6 +302,65 @@ export default function Sources() {
                 >
                   <Plus className="size-4" />
                   Connect Source
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+      {/* Edit Source Modal */}
+      {editingSource && (
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-card border border-border rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between p-4 border-b border-border/50 bg-secondary/10">
+              <h2 className="text-lg font-semibold text-foreground">Edit Knowledge Source</h2>
+              <button 
+                onClick={() => setEditingSource(null)}
+                className="p-1 text-gray-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-full transition-colors"
+              >
+                <X className="size-5" />
+              </button>
+            </div>
+            <form onSubmit={handleEditSubmit} className="p-5 space-y-4">
+              <div>
+                <label className="block text-xs font-medium text-gray-400 mb-1.5">Source Name</label>
+                <input 
+                  type="text" 
+                  value={editingSource.name}
+                  onChange={(e) => setEditingSource({...editingSource, name: e.target.value})}
+                  placeholder="e.g. Confluence Wiki, HR Database"
+                  className="w-full bg-secondary/30 border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-accent transition-colors text-foreground"
+                  required
+                  autoFocus
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-400 mb-1.5">Source Type</label>
+                <select 
+                  value={editingSource.type}
+                  onChange={(e) => setEditingSource({...editingSource, type: e.target.value})}
+                  className="w-full bg-secondary/30 border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-accent capitalize transition-colors text-foreground"
+                >
+                  {sourceTypes.map(type => (
+                    <option key={type} value={type}>{type}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="pt-4 flex items-center justify-end gap-3 border-t border-border/50 mt-2">
+                <button 
+                  type="button"
+                  onClick={() => setEditingSource(null)}
+                  className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-foreground hover:bg-secondary/50 rounded-lg transition-colors"
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit"
+                  disabled={!editingSource.name}
+                  className="px-4 py-2 text-sm font-medium bg-accent hover:bg-accent/90 text-primary-foreground rounded-lg transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                >
+                  <Edit2 className="size-4" />
+                  Save Changes
                 </button>
               </div>
             </form>
