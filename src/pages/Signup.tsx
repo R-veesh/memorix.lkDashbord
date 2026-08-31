@@ -16,6 +16,21 @@ export default function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  const getPasswordStrength = (pass: string) => {
+    let score = 0;
+    if (!pass) return { score: 0, label: '', color: 'bg-gray-700' };
+    if (pass.length >= 6) score += 1;
+    if (pass.length >= 8 && /[A-Z]/.test(pass) && /[0-9]/.test(pass)) score += 1;
+    if (pass.length >= 8 && /[^A-Za-z0-9]/.test(pass)) score += 1;
+
+    if (score === 1) return { score, label: 'Weak', color: 'bg-rose-500' };
+    if (score === 2) return { score, label: 'Medium', color: 'bg-amber-500' };
+    if (score === 3) return { score, label: 'Strong', color: 'bg-emerald-500' };
+    return { score: 0, label: 'Too short', color: 'bg-rose-500' };
+  };
+
+  const strength = getPasswordStrength(password);
+
   const getErrorMessage = (code: string) => {
     switch (code) {
       case 'auth/email-already-in-use':
@@ -91,7 +106,7 @@ export default function Signup() {
                   type="text" 
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  placeholder="John Doe"
+                  placeholder="Enter your full name"
                   className="w-full bg-secondary/50 border border-border rounded-lg pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:border-accent transition-colors"
                   required
                 />
@@ -133,6 +148,18 @@ export default function Signup() {
                   {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                 </button>
               </div>
+              {password && (
+                <div className="mt-2">
+                  <div className="flex gap-1 h-1 w-full rounded-full overflow-hidden bg-secondary">
+                    <div className={`h-full flex-1 ${strength.score >= 1 ? strength.color : 'bg-transparent'} transition-colors`} />
+                    <div className={`h-full flex-1 ${strength.score >= 2 ? strength.color : 'bg-transparent'} transition-colors`} />
+                    <div className={`h-full flex-1 ${strength.score >= 3 ? strength.color : 'bg-transparent'} transition-colors`} />
+                  </div>
+                  <p className={`text-[10px] mt-1 text-right ${strength.score === 0 ? 'text-gray-500' : strength.color.replace('bg-', 'text-')}`}>
+                    {strength.label}
+                  </p>
+                </div>
+              )}
             </div>
 
             <div>

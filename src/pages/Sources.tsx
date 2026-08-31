@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Database, Plus, Search, Filter, MoreVertical, HardDrive, FileText, Globe, X } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Database, Plus, Search, Filter, MoreVertical, HardDrive, FileText, Globe, X, RefreshCw, Edit2, Trash2 } from 'lucide-react';
 import { sourcesData as initialSourcesData } from '../data/mockData';
 import { StatusBadge } from '../components/StatusBadge';
 
@@ -17,6 +17,14 @@ export default function Sources() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [typeFilter, setTypeFilter] = useState<string | null>(null);
+  
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+
+  useEffect(() => {
+    const handleClickOutside = () => setActiveDropdown(null);
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, []);
   
   const [showAddModal, setShowAddModal] = useState(false);
   const [newSourceName, setNewSourceName] = useState('');
@@ -137,9 +145,39 @@ export default function Sources() {
                     <p className="text-xs text-gray-400 capitalize">{source.type}</p>
                   </div>
                 </div>
-                <button className="text-gray-500 hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-secondary rounded">
-                  <MoreVertical className="size-4" />
-                </button>
+                <div className="relative">
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setActiveDropdown(activeDropdown === source.id ? null : source.id);
+                    }}
+                    className={`text-gray-500 hover:text-foreground transition-opacity p-1 hover:bg-secondary rounded ${activeDropdown === source.id ? 'opacity-100 bg-secondary' : 'opacity-0 group-hover:opacity-100'}`}
+                  >
+                    <MoreVertical className="size-4" />
+                  </button>
+                  {activeDropdown === source.id && (
+                    <div 
+                      className="absolute right-0 mt-2 w-40 bg-card border border-border rounded-xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 z-50"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <div className="p-1">
+                        <button className="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-secondary/50 text-foreground flex items-center gap-2">
+                          <RefreshCw className="size-3.5" />
+                          Sync Now
+                        </button>
+                        <button className="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-secondary/50 text-foreground flex items-center gap-2">
+                          <Edit2 className="size-3.5" />
+                          Edit Settings
+                        </button>
+                        <div className="h-px bg-border my-1" />
+                        <button className="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-rose-500/10 text-rose-400 flex items-center gap-2">
+                          <Trash2 className="size-3.5" />
+                          Remove
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
               
               <div className="space-y-3 mt-6">
